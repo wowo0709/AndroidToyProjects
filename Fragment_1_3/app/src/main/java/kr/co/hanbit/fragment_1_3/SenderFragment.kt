@@ -1,0 +1,38 @@
+package kr.co.hanbit.fragment_1_3
+
+import android.os.Bundle
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.core.os.bundleOf
+import androidx.fragment.app.setFragmentResult
+import kr.co.hanbit.fragment_1_3.databinding.FragmentSenderBinding
+
+class SenderFragment : Fragment() {
+
+    lateinit var binding: FragmentSenderBinding
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding = FragmentSenderBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // YES버튼 클릭 리스너 생성
+        binding.btnYes.setOnClickListener {
+            val bundle = bundleOf("valueKey" to "Yes") // 값을 갖는 번들 생성
+            setFragmentResult("request", bundle)    // request를 요청키로 번들 전송
+        }
+        // NO버튼 클릭 리스너 생성
+        binding.btnNo.setOnClickListener {
+            val bundle = bundleOf("valueKey" to "No") // 값을 갖는 번들 생성
+            setFragmentResult("request", bundle)   // request를 요청키로 번들 전송
+        }
+    }
+}
