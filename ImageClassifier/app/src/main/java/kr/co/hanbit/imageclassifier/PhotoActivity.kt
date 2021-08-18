@@ -174,7 +174,7 @@ class PhotoActivity : BaseActivity() {
     private fun callClassifier(bitmap: Bitmap?): String{
         val output: Pair<String, Float> = classifier.classify(bitmap)
         val resultStr = String.format(Locale.ENGLISH,
-                "class : %s Prob : %.2f%%",
+                "Class : %s   Prob : %.2f%%",
                 output.first, output.second * 100)
 
         return resultStr
