@@ -56,7 +56,7 @@ class SqliteHelper(context: Context, name: String, version: Int): SQLiteOpenHelp
             // 반복문을 돌면서 테이블에 정으된 3개의 컬럼에서 값 꺼낸 후 변수에 저장
             val no: Long = cursor.getLong(cursor.getColumnIndex("no"))
             val content = cursor.getString(cursor.getColumnIndex("content"))
-            val datetime = cursor.getLong(cursor.getColumnIndex("datatime"))
+            val datetime = cursor.getLong(cursor.getColumnIndex("datetime"))
             // 컬럼값들로 Memo 클래스를 생성하고 반환할 목록에 추가
             list.add(Memo(no, content, datetime))
         }
@@ -86,6 +86,12 @@ class SqliteHelper(context: Context, name: String, version: Int): SQLiteOpenHelp
         val db = writableDatabase
         db.execSQL(delete)
         db.close()
+
+//        // 쓰기 전용 데이터베이스에서 삭제
+//        // 파라미터: 테이블명, 삭제할 조건, 조건파라미터
+//        val wd = writableDatabase
+//        wd.delete("memo", "no = ${memo.no}", null)
+//        wd.close()
     }
 }
 
