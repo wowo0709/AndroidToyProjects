@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity() {
 
         // 리사이클러 뷰 어댑터 생성
         val adapter = RecyclerAdapter()
-        // 삭제 기능 추가: 2-1. 어댑터에 SqliteHelper 전달
+        // 삭제 기능 추가: 2-2. 어댑터에 SqliteHelper 전달
         adapter.helper = helper
 
         // 어댑터의 listData에 데이터베이스에서 가져온 데이터 세팅
