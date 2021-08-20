@@ -10,7 +10,7 @@ class MainActivity : AppCompatActivity() {
     val binding by lazy {ActivityMainBinding.inflate(layoutInflater)}
 
     // SqliteHelper 인스턴스를 생성
-    val helper = SqliteHelper(this, "memo", 1)
+    var helper = SqliteHelper(this, "memo", 1)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
