@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.SystemClock
 import android.provider.MediaStore
 import android.widget.Toast
 import kr.co.hanbit.imageclassifier.databinding.ActivityPhotoBinding
@@ -134,6 +135,7 @@ class PhotoActivity : BaseActivity() {
 
                         binding.imageView.setImageBitmap(capturedImage)
                         binding.textView.text = result
+
                     }
                 }
                 REQ_GALLERY -> {
@@ -172,10 +174,15 @@ class PhotoActivity : BaseActivity() {
     }
 
     private fun callClassifier(bitmap: Bitmap?): String{
+        val startTime = SystemClock.uptimeMillis() // 모델 성능 측정
         val output: Pair<String, Float> = classifier.classify(bitmap)
+        val elapsedTime = SystemClock.uptimeMillis() - startTime // 모델 성능 측정
+
         val resultStr = String.format(Locale.ENGLISH,
-                "Class : %s   Prob : %.2f%%",
+                "class : %s   Prob : %.2f%%",
                 output.first, output.second * 100)
+
+        binding.textLog.text = "$elapsedTime ms" // 모델 성능 측정
 
         return resultStr
     }
