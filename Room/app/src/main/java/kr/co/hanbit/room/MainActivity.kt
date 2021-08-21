@@ -3,6 +3,7 @@ package kr.co.hanbit.room
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.room.Room
 import kr.co.hanbit.room.databinding.ActivityMainBinding
@@ -15,6 +16,9 @@ class MainActivity : AppCompatActivity() {
     // 6-1. SqliteHelper를 RoomHelper로 변경
     // var helper = SqliteHelper(this, "memo", 1)
     var helper: RoomHelper? = null
+
+    // 7-4. 메모 수정하기: 수정할 데이터를 임시 저장할 프로퍼티 생성
+    var updateMemo: RoomMemo? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,6 +38,9 @@ class MainActivity : AppCompatActivity() {
         // adapter.listData.addAll(helper.selectMemo())
         adapter.listData.addAll(helper?.roomMemoDAO()?.getAll()?:listOf())
 
+        // 7-5. 메모 수정하기: 수정을 위해 어댑터에 메인액티비티 연결
+        adapter.mainActivity = this
+
         // 레이아웃의 리사이클러뷰 위젯에 어댑터를 연결하고 레이아웃 매니저 설정
         binding.recyclerMemo.adapter = adapter
         binding.recyclerMemo.layoutManager = LinearLayoutManager(this)
@@ -41,8 +48,15 @@ class MainActivity : AppCompatActivity() {
         // 6-3. RoomHelper를 사용하도록 수정
         // 저장 버튼에 클릭 리스너 달기
         binding.btnSave.setOnClickListener {
+            // 7-6. 메모 수정하기: 수정 체크 추가
+            if (updateMemo != null){
+                updateMemo?.content = binding.editMemo.text.toString()
+                helper?.roomMemoDAO()?.update(updateMemo!!)
+                refreshAdapter(adapter)
+                cancelUpdate() // 수정 완료 후 원상태로 복귀
+            }
             // 플레인 텍스트에 입력된 내용이 있으면,
-            if(binding.editMemo.text.toString().isNotEmpty()) {
+            else if(binding.editMemo.text.toString().isNotEmpty()) {
                 val memo = RoomMemo(binding.editMemo.text.toString(), System.currentTimeMillis())
                 helper?.roomMemoDAO()?.insert(memo)
                 adapter.listData.clear()
@@ -59,6 +73,38 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        // 7-7. 메모 수정하기: 수정 취소 버튼 클릭 리스너 달기
+        binding.btnCancel.setOnClickListener {
+            cancelUpdate()
+        }
 
     }
+
+    // 7-8. 메모 수정하기: 수정 작업을 위한 세팅
+    fun setUpdate(memo: RoomMemo){
+        updateMemo = memo // 수정할 메모 임시 저장
+
+        binding.editMemo.setText(updateMemo!!.content) // 플레인 텍스트 내용을 수정할 텍스트로 설정
+        binding.btnCancel.visibility = View.VISIBLE    // 숨겨둔 수정취소 버튼 가시화
+        binding.btnSave.text = "수정"                   // 원래 '저장' 이었던 문자열을 '수정' 으로 변경
+    }
+
+
+    // 7-9. 메모 수정하기: 수정을 취소(원상태로 복귀)
+    fun cancelUpdate(){
+        updateMemo = null
+
+        binding.editMemo.setText("")              // 플레인 텍스트 초기화
+        binding.btnCancel.visibility = View.GONE  // 수정취소 버튼 비가시화
+        binding.btnSave.text = "저장"              // '수정' 이었던 문자열을 다시 '저장' 으로 변경
+    }
+
+
+    // 7-10. 메모 수정하기: 수정 내용을 리사이클러 뷰 목록에 반영
+    fun refreshAdapter(adapter: RecyclerAdapter){
+        adapter.listData.clear()
+        adapter.listData.addAll(helper?.roomMemoDAO()?.getAll() ?: mutableListOf())
+        adapter.notifyDataSetChanged()
+    }
+
 }

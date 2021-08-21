@@ -10,6 +10,9 @@ import java.text.SimpleDateFormat
 // 어댑터 클래스
 class RecyclerAdapter: RecyclerView.Adapter<RecyclerAdapter.Holder>() {
 
+    // 7-2. 메모 수정하기: 수정을 위해서 MainActivity 연결
+    var mainActivity: MainActivity? = null
+
     // 삭제 기능 추가 2-2: SqliteHelper 프로퍼티
     // 5. Memo 클래스 참조를 RoomMemo 클래스 참조로 변경
     // var helper: SqliteHelper? = null
@@ -32,6 +35,10 @@ class RecyclerAdapter: RecyclerView.Adapter<RecyclerAdapter.Holder>() {
                 helper?.roomMemoDAO()?.delete(mRoomMemo!!)
                 listData.remove(mRoomMemo)
                 notifyDataSetChanged()
+            }
+            // 7-3. 메모 수정하기: 수정 기능 추가(메모 내용 쿨락 사 MainActivity의 setUpdate 메서드 호출)
+            binding.textContent.setOnClickListener {
+                mainActivity?.setUpdate(mRoomMemo!!)
             }
         }
 

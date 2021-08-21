@@ -1,10 +1,7 @@
 package kr.co.hanbit.room
 
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
+import androidx.room.*
 import androidx.room.OnConflictStrategy.REPLACE
-import androidx.room.Query
 
 // 3-1. RoomMemoDAO 인터페이스 정의하기: 인터페이스 생성하고 @DAO 선언
 @Dao
@@ -19,4 +16,8 @@ interface RoomMemoDAO {
 
     @Delete
     fun delete(memo: RoomMemo)
+
+    // 7-1. DAO 인터페이스에 수정 메서드 추가
+    @Update
+    fun update(memo: RoomMemo)
 }
