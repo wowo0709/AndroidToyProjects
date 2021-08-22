@@ -47,6 +47,8 @@ dependencies {
     // 1. 텐서플로 라이트와 텐서플로 라이트 서포트 라이브러리 의존성 추가
     implementation 'org.tensorflow:tensorflow-lite:2.4.0'
     implementation 'org.tensorflow:tensorflow-lite-support:0.1.0'
+    // 추론 성능 개선: GPU 위임
+    implementation 'org.tensorflow:tensorflow-lite-gpu:2.4.0'
 
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

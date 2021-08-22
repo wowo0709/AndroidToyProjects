@@ -3,8 +3,11 @@ package kr.co.hanbit.imageclassifier
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.ColorSpace
+import android.os.Build
 import org.checkerframework.checker.nullness.qual.NonNull
 import org.tensorflow.lite.Interpreter
+import org.tensorflow.lite.gpu.CompatibilityList
+import org.tensorflow.lite.gpu.GpuDelegate
 import org.tensorflow.lite.support.common.FileUtil
 import org.tensorflow.lite.support.common.ops.NormalizeOp
 import org.tensorflow.lite.support.image.ImageProcessor
@@ -59,6 +62,10 @@ class ClassifierWithModel(context: Context) {
         // interpreter = Interpreter(model)
         // Model 클래스가 tflite 파일 로드부터 추론까지 모두 수행
         model = Model.createModel(context, MODEL_NAME)
+        // 모델 성능 개선
+        // model = createMultiThreadModel(2) // CPU 멀티스레드 모델
+        // model = createGPUModel()          // GPU 위임 모델
+        // model = createNNAPIModel()        // NNAPI 위임 모델
         // ========================================================================================
 
         // 3-4. 입력 이미지 전처리: 메서드 호출
@@ -152,6 +159,46 @@ class ClassifierWithModel(context: Context) {
         }
 
         return Pair(maxKey, maxVal)
+    }
+
+    // 추론 성능 개선: CPU 멀티 스레드
+    private fun createMultiThreadModel(nThreads: Int): Model{
+        try {
+            val optionsBuilder = Model.Options.Builder()
+            optionsBuilder.setNumThreads(nThreads)
+            return Model.createModel(context, MODEL_NAME, optionsBuilder.build())
+        }catch(ioe: IOException){
+            throw ioe
+        }
+    }
+
+    // 추론 성능 개선: GPU 위임
+    private fun createGPUModel(): Model {
+        try {
+            val optionsBuilder = Model.Options.Builder()
+            val compatList = CompatibilityList()
+
+            if (compatList.isDelegateSupportedOnThisDevice)
+                optionsBuilder.setDevice(Model.Device.GPU)
+
+            return Model.createModel(context, MODEL_NAME, optionsBuilder.build())
+        }catch(ioe: IOException){
+            throw ioe
+        }
+    }
+
+    // 추론 성능 개선: NNAPI 위임
+    private fun createNNAPIModel(): Model{
+        try{
+            val optionsBuilder = Model.Options.Builder()
+
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
+                optionsBuilder.setDevice(Model.Device.NNAPI)
+
+            return Model.createModel(context, MODEL_NAME, optionsBuilder.build())
+        }catch(ioe: IOException){
+            throw ioe
+        }
     }
 
     // 6. 자원 해제: 자원 해제 메서드 정의

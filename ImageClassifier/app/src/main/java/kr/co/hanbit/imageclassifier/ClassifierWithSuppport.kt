@@ -2,7 +2,11 @@ package kr.co.hanbit.imageclassifier
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.os.Build
 import org.tensorflow.lite.Interpreter
+import org.tensorflow.lite.gpu.CompatibilityList
+import org.tensorflow.lite.gpu.GpuDelegate
+import org.tensorflow.lite.nnapi.NnApiDelegate
 import org.tensorflow.lite.support.common.FileUtil
 import org.tensorflow.lite.support.common.ops.NormalizeOp
 import org.tensorflow.lite.support.image.ImageProcessor
@@ -47,6 +51,10 @@ class ClassifierWithSuppport(context: Context) {
         val model: ByteBuffer? = FileUtil.loadMappedFile(context, MODEL_NAME)
         model?.order(ByteOrder.nativeOrder())?:throw IOException()
         interpreter = Interpreter(model)
+        // 모델 성능 개선
+        // interpreter = createMultiThreadInterpreter(2) // CPU 멀티스레드
+        // interpreter = createGPUInterpreter()          // GPU 위임
+        // interpreter = createNNAPIInterpreter()        // NNAPI 위임 모델
         // 3-4. 입력 이미지 전처리: 메서드 호출
         initModelShape()
         // 5-4. 추론 결과 해석: 라벨 파일 로드
@@ -113,6 +121,58 @@ class ClassifierWithSuppport(context: Context) {
 
         return Pair(maxKey, maxVal)
     }
+
+    // 모델 성능 개선: CPU 멀티스레드
+    private fun createMultiThreadInterpreter(nThreads: Int): Interpreter{
+        try{
+            val options = Interpreter.Options()
+            options.setNumThreads(nThreads)
+            val model = FileUtil.loadMappedFile(context, MODEL_NAME)
+            model.order(ByteOrder.nativeOrder())
+            return Interpreter(model, options)
+        }catch(ioe: IOException){
+            throw ioe
+        }
+    }
+
+    // 모델 성능 개선: GPU 위임
+    private fun createGPUInterpreter(): Interpreter{
+        try{
+            val options = Interpreter.Options()
+            val compatList = CompatibilityList()
+
+            if(compatList.isDelegateSupportedOnThisDevice){
+                val delegateOptions = compatList.bestOptionsForThisDevice
+                val gpuDelegate = GpuDelegate(delegateOptions)
+                options.addDelegate(gpuDelegate)
+            }
+
+            val model = FileUtil.loadMappedFile(context, MODEL_NAME)
+            model.order(ByteOrder.nativeOrder())
+            return Interpreter(model, options)
+        }catch(ioe: IOException){
+            throw ioe
+        }
+    }
+
+    // 모델 성능 개선: NNAPI 위임
+    private fun createNNAPIInterpreter(): Interpreter{
+        try{
+            val options = Interpreter.Options()
+
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P){
+                val nnApiDelegate = NnApiDelegate()
+                options.addDelegate(nnApiDelegate)
+            }
+
+            val model = FileUtil.loadMappedFile(context, MODEL_NAME)
+            model.order(ByteOrder.nativeOrder())
+            return Interpreter(model, options)
+        }catch(ioe: IOException){
+            throw ioe
+        }
+    }
+
 
     // 6. 자원 해제: 자원 해제 메서드 정의
     fun finish(){
