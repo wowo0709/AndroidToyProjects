@@ -41,6 +41,17 @@ class SqliteHelper(context: Context, name: String, version: Int): SQLiteOpenHelp
         // 쓰기 전용 데이터베이스 닫기
         wd.close()
     }
+    /*
+    // 삽입 메서드 쿼리로 작성하기
+    fun insertMemo(memo: Memo){
+        val query = "insert into memo(content, datetime) " +
+                "values('${memo.content}','${memo.datetime}')"
+        val db = writableDatabase
+        db.execSQL(query)
+        db.close()
+    }
+    */
+
     // SELECT
     fun selectMemo(): MutableList<Memo>{
         val list = mutableListOf<Memo>() // 반환할 값 선언
@@ -78,6 +89,19 @@ class SqliteHelper(context: Context, name: String, version: Int): SQLiteOpenHelp
         wd.update("memo", values, "no = ${memo.no}", null)
         wd.close()
     }
+
+    /*
+    // 수정 메서드 쿼리로 작성하기
+    fun updateMemo(memo: Memo){
+        val query = "update memo set content='${memo.content}', " +
+                                    "datetime='${memo.datetime}'" +
+                                    "where no = ${memo.no}"
+        val db = writableDatabase
+        db.execSQL(query)
+        db.close()
+    }
+     */
+
     // DELETE
     fun deleteMemo(memo: Memo){
         // 쿼리 작성
