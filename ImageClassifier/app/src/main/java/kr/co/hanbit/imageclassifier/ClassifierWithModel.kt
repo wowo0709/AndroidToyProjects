@@ -2,9 +2,8 @@ package kr.co.hanbit.imageclassifier
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.ColorSpace
 import android.os.Build
-import org.checkerframework.checker.nullness.qual.NonNull
+import androidx.annotation.NonNull
 import org.tensorflow.lite.Interpreter
 import org.tensorflow.lite.gpu.CompatibilityList
 import org.tensorflow.lite.gpu.GpuDelegate
