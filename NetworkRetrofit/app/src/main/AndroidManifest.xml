@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="kr.co.hanbit.networkretrofit">
+
+    <!-- 2-1. 인터넷 권한 명세 -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- 2-2. [[File] - [Settings]의 [Plugins]에서 JSON To Kotlin Class 플러그인 설치 -->
+    <!-- 2-3. 설치가 완료되면 [OK] 버튼을 클릭해서 반영 -->
+    <!-- 2-4. https://api.github.com/users/Kotlin/repos 페이지의 JSON 데이터 복사 -->
+    <!-- 2-5. [Kotlin data class File from JSON] 클래스를 생성할 때 복사한 JSON 데이터를 붙여넣고 Name에 -->
+    <!-- 'Repositories'를 입력하고 [Generate] 하면 변화된 데이터 클래스를 자동으로 생성 -->
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.NetworkRetrofit">
+        <activity android:name=".MainActivity" android:exported = 'true'>
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
